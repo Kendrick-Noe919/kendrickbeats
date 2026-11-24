@@ -11,3 +11,10 @@ export class InvalidPasswordError extends Error {
     this.name = 'InvalidPasswordError'
   }
 }
+
+export class InvalidCredentialsError extends Error {
+  constructor() {
+    super('Email ou mot de passe incorrect')
+    this.name = 'InvalidCredentialsError'
+  }
+}

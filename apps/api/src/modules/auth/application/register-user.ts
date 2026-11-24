@@ -4,6 +4,7 @@ import { EmailAlreadyUsedError, InvalidPasswordError } from './errors.js'
 import type { IdGenerator } from './ports/id-generator.js'
 import type { PasswordHasher } from './ports/password-hasher.js'
 import type { UserRepository } from './ports/user-repository.js'
+import { toUserDto } from './user-mapper.js'
 
 export interface RegisterUserInput {
   email: string
@@ -37,11 +38,6 @@ export class RegisterUser {
 
     await this.users.save(user)
 
-    return {
-      id: user.id,
-      email: user.email.value,
-      displayName: user.displayName,
-      role: user.role,
-    }
+    return toUserDto(user)
   }
 }
