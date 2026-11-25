@@ -1,9 +1,10 @@
 import type { UserRole } from '@kendrick/contracts'
-import { Email } from './email.js'
+import type { Email } from './email.js'
+import { InvalidDisplayNameError } from './errors.js'
 
 export interface CreateUserProps {
   id: string
-  email: string
+  email: Email
   displayName: string
   passwordHash: string
   role?: UserRole
@@ -23,12 +24,12 @@ export class User {
     const displayName = props.displayName.trim()
 
     if (displayName.length === 0) {
-      throw new Error('Nom affiché requis')
+      throw new InvalidDisplayNameError()
     }
 
     return new User(
       props.id,
-      Email.create(props.email),
+      props.email,
       displayName,
       props.passwordHash,
       props.role ?? 'CUSTOMER',

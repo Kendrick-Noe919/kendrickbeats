@@ -1,6 +1,12 @@
 import type { UserDto } from '@kendrick/contracts'
+import { Email } from '../domain/email.js'
 import { User } from '../domain/user.js'
-import { EmailAlreadyUsedError, InvalidPasswordError } from './errors.js'
+import {
+  EmailAlreadyUsedError,
+  InvalidPasswordError,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+} from './errors.js'
 import type { IdGenerator } from './ports/id-generator.js'
 import type { PasswordHasher } from './ports/password-hasher.js'
 import type { UserRepository } from './ports/user-repository.js'
@@ -20,18 +26,25 @@ export class RegisterUser {
   ) {}
 
   async execute(input: RegisterUserInput): Promise<UserDto> {
-    if (input.password.length < 8) {
+    if (
+      input.password.length < PASSWORD_MIN_LENGTH ||
+      input.password.length > PASSWORD_MAX_LENGTH
+    ) {
       throw new InvalidPasswordError()
     }
 
-    const existing = await this.users.findByEmail(input.email)
+    const email = Email.create(input.email)
+
+    // Vérification anticipée pour un message clair ; l'unicité réelle est
+    // garantie par le repository (contrainte UNIQUE) lors du save.
+    const existing = await this.users.findByEmail(email)
     if (existing) {
       throw new EmailAlreadyUsedError()
     }
 
     const user = User.create({
       id: this.ids.generate(),
-      email: input.email,
+      email,
       displayName: input.displayName,
       passwordHash: await this.hasher.hash(input.password),
     })

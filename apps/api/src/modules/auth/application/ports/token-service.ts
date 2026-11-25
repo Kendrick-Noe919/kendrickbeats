@@ -7,5 +7,6 @@ export interface TokenPayload {
 
 export interface TokenService {
   sign(payload: TokenPayload): Promise<string>
+  /** Lève `InvalidTokenError` si le token est invalide, expiré ou mal formé. */
   verify(token: string): Promise<TokenPayload>
 }
