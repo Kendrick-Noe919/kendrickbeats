@@ -10,6 +10,15 @@ export interface CreateUserProps {
   role?: UserRole
 }
 
+export interface RestoreUserProps {
+  id: string
+  email: Email
+  displayName: string
+  passwordHash: string
+  role: UserRole
+  createdAt: Date
+}
+
 export class User {
   private constructor(
     public readonly id: string,
@@ -20,6 +29,7 @@ export class User {
     public readonly createdAt: Date,
   ) {}
 
+  /** Crée un nouvel utilisateur (inscription) en appliquant les règles métier. */
   static create(props: CreateUserProps): User {
     const displayName = props.displayName.trim()
 
@@ -34,6 +44,21 @@ export class User {
       props.passwordHash,
       props.role ?? 'CUSTOMER',
       new Date(),
+    )
+  }
+
+  /**
+   * Reconstruit un utilisateur déjà persisté (lecture en base).
+   * Les données sont supposées valides : aucune règle de création n'est rejouée.
+   */
+  static restore(props: RestoreUserProps): User {
+    return new User(
+      props.id,
+      props.email,
+      props.displayName,
+      props.passwordHash,
+      props.role,
+      props.createdAt,
     )
   }
 }

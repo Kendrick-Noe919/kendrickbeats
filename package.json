@@ -3,14 +3,17 @@
   "private": true,
   "version": "0.0.0",
   "workspaces": [
-    "apps/*",
+    "packages/*",
     "services/*",
-    "packages/*"
+    "apps/*"
   ],
   "engines": {
     "node": ">=22"
   },
   "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run build -w @kendrick/contracts && npm run typecheck --workspaces --if-present",
+    "test": "npm run build -w @kendrick/contracts && npm run test --workspaces --if-present",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

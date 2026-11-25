@@ -107,7 +107,7 @@ describe('RegisterUser', () => {
     // Simule une inscription concurrente : findByEmail ne voit rien,
     // mais un autre utilisateur a été enregistré entre-temps.
     const racingUsers = new InMemoryUserRepository()
-    racingUsers.findByEmail = async () => null
+    racingUsers.findByEmail = () => Promise.resolve(null)
     await racingUsers.save(
       User.create({
         id: 'other',

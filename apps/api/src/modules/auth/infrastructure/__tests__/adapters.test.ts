@@ -6,6 +6,7 @@ import { JoseTokenService } from '../jose-token-service.js'
 import { UuidIdGenerator } from '../uuid-id-generator.js'
 
 const SECRET = 'un-secret-de-test-long-de-plus-de-32-caracteres'
+const OPTIONS = { secret: SECRET, issuer: 'kendrick-api', audience: 'kendrick-web' }
 
 describe('Argon2PasswordHasher', () => {
   const hasher = new Argon2PasswordHasher()
@@ -33,7 +34,7 @@ describe('Argon2PasswordHasher', () => {
 })
 
 describe('JoseTokenService', () => {
-  const tokens = new JoseTokenService(SECRET)
+  const tokens = new JoseTokenService(OPTIONS)
 
   it('signe puis relit un token', async () => {
     const token = await tokens.sign({ sub: 'user-1', role: 'ADMIN' })
@@ -46,13 +47,16 @@ describe('JoseTokenService', () => {
   })
 
   it('refuse un token signé avec un autre secret', async () => {
-    const other = new JoseTokenService('un-autre-secret-aussi-long-que-le-premier-ok')
+    const other = new JoseTokenService({
+      ...OPTIONS,
+      secret: 'un-autre-secret-aussi-long-que-le-premier-ok',
+    })
     const token = await other.sign({ sub: 'user-1', role: 'CUSTOMER' })
     await expect(tokens.verify(token)).rejects.toThrow(InvalidTokenError)
   })
 
   it('refuse un token expiré', async () => {
-    const expired = new JoseTokenService(SECRET, '-1s')
+    const expired = new JoseTokenService({ ...OPTIONS, expiresIn: '-1s' })
     const token = await expired.sign({ sub: 'user-1', role: 'CUSTOMER' })
     await expect(tokens.verify(token)).rejects.toThrow(InvalidTokenError)
   })
@@ -61,13 +65,29 @@ describe('JoseTokenService', () => {
     const token = await new SignJWT({ role: 'SUPERADMIN' })
       .setProtectedHeader({ alg: 'HS256' })
       .setSubject('user-1')
+      .setIssuer(OPTIONS.issuer)
+      .setAudience(OPTIONS.audience)
       .setExpirationTime('5m')
       .sign(new TextEncoder().encode(SECRET))
     await expect(tokens.verify(token)).rejects.toThrow(InvalidTokenError)
   })
 
+  it('refuse un token destiné à une autre audience', async () => {
+    const other = new JoseTokenService({ ...OPTIONS, audience: 'autre-client' })
+    const token = await other.sign({ sub: 'user-1', role: 'CUSTOMER' })
+    await expect(tokens.verify(token)).rejects.toThrow(InvalidTokenError)
+  })
+
+  it('refuse un token émis par un autre émetteur', async () => {
+    const other = new JoseTokenService({ ...OPTIONS, issuer: 'autre-api' })
+    const token = await other.sign({ sub: 'user-1', role: 'CUSTOMER' })
+    await expect(tokens.verify(token)).rejects.toThrow(InvalidTokenError)
+  })
+
   it('refuse un secret trop court', () => {
-    expect(() => new JoseTokenService('court')).toThrow('au moins 32 caractères')
+    expect(() => new JoseTokenService({ ...OPTIONS, secret: 'court' })).toThrow(
+      'au moins 32 caractères',
+    )
   })
 })
 
