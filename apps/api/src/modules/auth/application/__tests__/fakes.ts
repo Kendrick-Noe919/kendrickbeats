@@ -1,10 +1,9 @@
 import type { User } from '../../domain/user.js'
 import type { IdGenerator } from '../ports/id-generator.js'
 import type { PasswordHasher } from '../ports/password-hasher.js'
-import type { UserRepository } from '../ports/user-repository.js'
 import type { TokenPayload, TokenService } from '../ports/token-service.js'
+import type { UserRepository } from '../ports/user-repository.js'
 
- 
 export class InMemoryUserRepository implements UserRepository {
   private readonly items: User[] = []
 
@@ -38,7 +37,6 @@ export class SequentialIdGenerator implements IdGenerator {
   generate(): string {
     return `user-${this.next++}`
   }
-  
 }
 export class FakeTokenService implements TokenService {
   async sign(payload: TokenPayload): Promise<string> {
