@@ -35,13 +35,30 @@ async function toApiError(response: Response): Promise<ApiError> {
   return new ApiError(response.status, 'UNKNOWN_ERROR', 'Une erreur inattendue est survenue')
 }
 
-export async function postJson<TResponse>(path: string, body: unknown): Promise<TResponse> {
+interface RequestOptions {
+  method: 'GET' | 'POST'
+  path: string
+  body?: unknown
+  /** Jeton d'accès, envoyé dans l'en-tête Authorization. */
+  token?: string
+}
+
+async function request<TResponse>({
+  method,
+  path,
+  body,
+  token,
+}: RequestOptions): Promise<TResponse> {
+  const headers: Record<string, string> = {}
+  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  if (token !== undefined) headers['Authorization'] = `Bearer ${token}`
+
   let response: Response
   try {
     response = await fetch(`${API_URL}${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      method,
+      headers,
+      body: body === undefined ? undefined : JSON.stringify(body),
     })
   } catch (error) {
     throw new ApiError(0, 'NETWORK_ERROR', 'Impossible de joindre le serveur', { cause: error })
@@ -51,4 +68,12 @@ export async function postJson<TResponse>(path: string, body: unknown): Promise<
     throw await toApiError(response)
   }
   return (await response.json()) as TResponse
+}
+
+export function postJson<TResponse>(path: string, body: unknown): Promise<TResponse> {
+  return request<TResponse>({ method: 'POST', path, body })
+}
+
+export function getJson<TResponse>(path: string, token?: string): Promise<TResponse> {
+  return request<TResponse>({ method: 'GET', path, token })
 }

@@ -212,3 +212,32 @@ a {
 .muted a {
   color: var(--color-cyan);
 }
+.header__button {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1.5rem;
+  margin: 1rem 0 0;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  background: var(--color-surface);
+  text-align: left;
+}
+
+.details dt {
+  color: var(--color-muted);
+}
+
+.details dd {
+  margin: 0;
+  font-family: var(--font-mono);
+}

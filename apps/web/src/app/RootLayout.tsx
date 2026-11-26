@@ -1,4 +1,5 @@
-import { Link, NavLink, Outlet } from 'react-router'
+import { Link, Outlet } from 'react-router'
+import { AuthNav } from './AuthNav'
 
 export function RootLayout() {
   return (
@@ -7,14 +8,7 @@ export function RootLayout() {
         <Link to="/" className="header__brand">
           Kendrick <span className="accent">Beats</span>
         </Link>
-        <nav className="header__nav">
-          <NavLink to="/login" className="header__link">
-            Connexion
-          </NavLink>
-          <NavLink to="/register" className="header__link header__link--cta">
-            Inscription
-          </NavLink>
-        </nav>
+        <AuthNav />
       </header>
       <main className="layout__content">
         <Outlet />
