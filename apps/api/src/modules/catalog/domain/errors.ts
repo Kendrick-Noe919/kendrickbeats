@@ -43,3 +43,48 @@ export class InvalidMoneyError extends CatalogValidationError {
     super('Montant invalide : un nombre entier positif ou nul')
   }
 }
+export class InvalidTitleError extends CatalogValidationError {
+  constructor() {
+    super('Titre invalide : de 1 à 100 caractères')
+  }
+}
+
+export class InvalidMediaUrlError extends CatalogValidationError {
+  constructor() {
+    super('Adresse invalide : une URL http(s) complète est attendue')
+  }
+}
+
+export class NoLicenseOfferedError extends CatalogValidationError {
+  constructor() {
+    super('Au moins une licence doit être proposée')
+  }
+}
+
+export class DuplicateLicenseError extends CatalogValidationError {
+  constructor() {
+    super('Une même licence ne peut être proposée qu’une seule fois')
+  }
+}
+
+export class InvalidLicensePriceError extends CatalogValidationError {
+  constructor() {
+    super('Le prix d’une licence doit être supérieur à 0')
+  }
+}
+
+export class LicensePriceOrderError extends CatalogValidationError {
+  constructor() {
+    super('Le prix doit augmenter avec la formule : Basic < Premium < Unlimited < Exclusive')
+  }
+}
+
+/** Action impossible dans l'état actuel du beat (ex. publier un beat déjà vendu en exclusivité). */
+export class InvalidBeatTransitionError extends Error {
+  constructor(action: string, status: string) {
+    // Élision devant une voyelle ou un h muet : « d’archiver », mais « de publier ».
+    const de = /^[aeiouyhàâéèêëîïôûü]/i.test(action) ? 'd’' : 'de '
+    super(`Impossible ${de}${action} un beat au statut ${status}`)
+    this.name = 'InvalidBeatTransitionError'
+  }
+}
