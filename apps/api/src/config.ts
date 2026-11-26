@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
+  DATABASE_URL: z.string().startsWith('postgres'),
   JWT_SECRET: z.string().min(32),
   JWT_ISSUER: z.string().min(1).default('kendrick-beats-api'),
   JWT_AUDIENCE: z.string().min(1).default('kendrick-beats-web'),
