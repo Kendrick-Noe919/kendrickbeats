@@ -1,0 +1,1 @@
+CREATE DATABASE kendrick_beats_test;

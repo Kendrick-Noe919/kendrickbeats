@@ -3,6 +3,7 @@ import type { User } from '../../domain/user.js'
 
 export interface UserRepository {
   findByEmail(email: Email): Promise<User | null>
+  findById(id: string): Promise<User | null>
 
   /**
    * Persiste un nouvel utilisateur.
