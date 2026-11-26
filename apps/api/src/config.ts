@@ -8,6 +8,15 @@ const envSchema = z.object({
   JWT_ISSUER: z.string().min(1).default('kendrick-beats-api'),
   JWT_AUDIENCE: z.string().min(1).default('kendrick-beats-web'),
   JWT_EXPIRES_IN: z.string().min(1).default('15m'),
+  CORS_ORIGINS: z
+    .string()
+    .default('http://127.0.0.1:5173,http://localhost:5173')
+    .transform((value) =>
+      value
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter((origin) => origin !== ''),
+    ),
 })
 
 export type AppConfig = z.infer<typeof envSchema>

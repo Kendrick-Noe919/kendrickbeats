@@ -29,4 +29,19 @@ describe('loadConfig', () => {
   it('refuse un secret trop court', () => {
     expect(() => loadConfig({ ...validEnv, JWT_SECRET: 'court' })).toThrow('Configuration invalide')
   })
+  it('autorise par défaut le site web local (CORS)', () => {
+    expect(loadConfig(validEnv).CORS_ORIGINS).toEqual([
+      'http://127.0.0.1:5173',
+      'http://localhost:5173',
+    ])
+  })
+
+  it('découpe CORS_ORIGINS en liste et ignore les espaces', () => {
+    const config = loadConfig({
+      ...validEnv,
+      CORS_ORIGINS: 'https://a.example.com, https://b.example.com ',
+    })
+
+    expect(config.CORS_ORIGINS).toEqual(['https://a.example.com', 'https://b.example.com'])
+  })
 })

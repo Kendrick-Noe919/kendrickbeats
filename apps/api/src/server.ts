@@ -31,7 +31,7 @@ async function main() {
       getCurrentUser: new GetCurrentUser(users),
       tokens,
     },
-    true,
+    { logger: true, corsOrigins: config.CORS_ORIGINS },
   )
 
   // Arrêt propre (Ctrl+C ou arrêt par Docker) : on termine les requêtes en cours
